@@ -2,4 +2,4 @@
 reports/__pycache__/
 utils/__pycache__/
 venv/
-output/
+output/*
