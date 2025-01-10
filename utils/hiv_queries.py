@@ -3,7 +3,7 @@ hiv_active = '''
     /* Active in care based on end date */
     use openmrs_warehouse;
     ---
-    SET @endDate = "2024-03-31";
+    SET @endDate = "2024-12-31";
     ---
     SET @defaultCutOff = 60;
     ---
@@ -52,9 +52,9 @@ hiv_mortality = '''
         /* Numerator */
         use openmrs_warehouse;
         ---
-        SET @startDate = "2024-01-01"
+        SET @startDate = "2024-10-01"
         ---
-        SET @endDate = "2024-03-31"
+        SET @endDate = "2024-12-31"
         ---
         SET @location= {};
         ---
@@ -100,7 +100,7 @@ use openmrs_warehouse;
 ---
 SET @location = {};
 ---
-SET @endDate = "2024-03-31";
+SET @endDate = "2024-12-31";
 ---
 /* Pepfar Cut-off = 30, MoH cut-off = 60 */
 SET @defaultCutOff = 60;
@@ -141,7 +141,7 @@ use openmrs_warehouse;
 ---
 SET @location = {};
 ---
-SET @endDate = "2024-03-31";
+SET @endDate = "2024-12-31";
 ---
 /* Pepfar Cut-off = 30, MoH cut-off = 60 */
 SET @defaultCutOff = 60;
@@ -182,7 +182,7 @@ active_24months_before = '''
     /* Active in care based on end date */
     use openmrs_warehouse;
     ---
-    SET @endDate = "2022-03-31";
+    SET @endDate = "2022-12-31";
     ---
     SET @defaultCutOff = 60;
     ---
@@ -231,7 +231,7 @@ active_12months_before = '''
     /* Active in care based on end date */
     use openmrs_warehouse;
     ---
-    SET @endDate = "2023-03-31";
+    SET @endDate = "2023-12-31";
     ---
     SET @defaultCutOff = 60;
     ---
@@ -281,9 +281,9 @@ vl_suppression_num = '''
 USE openmrs_warehouse;
 ---
 /* Space to cover 1 year 3 months between start date and end date */
-SET @startDate = '2022-12-31';
+SET @startDate = '2023-09-01';
 ---
-SET @endDate = "2024-03-31";
+SET @endDate = "2024-12-31";
 ---
 SET @location = {};
 ---
@@ -306,9 +306,9 @@ vl_suppression_den = '''
 USE openmrs_warehouse;
 ---
 /* Space to cover 1 year 3 months between start date and end date */
-SET @startDate = '2022-12-31';
+SET @startDate = '2023-09-01';
 ---
-SET @endDate = "2024-03-31";
+SET @endDate = "2024-12-31";
 ---
 SET @location = {};
 ---

@@ -26,7 +26,9 @@ pip install -r requirements.txt
 python3 utils/create_report.py  -p "./output/Upper Neno HIV-Data 2024.xlsx" -s Upper -t HIV
 ```
 
-5. Pull and write data to file
+5. Check dates for the HIV and NCD queries in ./utils/hiv_queries.py and ./utils/ncd_queries.py. If you are satisfied with the dates, proceed to the next step.
+
+6. Pull and write data to file
 
 ```python
 python3 main.py -p "./output/Upper Neno HIV-Data 2024.xlsx" -s Upper

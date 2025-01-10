@@ -5,6 +5,7 @@ LOWER_NENO = [
     "Nkhula Falls RHC",
     "Lisungwi Community hospital",
     "Chifunga HC",
+    "Tedzani Clinic"
 ]
 UPPER_NENO = [
     "Neno District Hospital",
@@ -14,7 +15,7 @@ UPPER_NENO = [
     "Magaleta HC",
     "Luwani RHC",
     "Nsambe HC",
-    "Neno Mission HC",
+    "Neno Mission HC"
 ]
 
 HIV_HEADERS = [

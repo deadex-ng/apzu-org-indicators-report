@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 import argparse
 from reports.execute_query import ExecuteQuery
 from  utils.hiv_queries import hiv_active, hiv_mortality, mmd_6months, mmd_3_5months, active_24months_before, active_12months_before, vl_suppression_num, vl_suppression_den
+from utils.ncd_queries import ncd_active, ncd_died, ncd_active_12months_before, ncd_active_24months_before, ncd_visits 
 
 load_dotenv()
 
@@ -30,17 +31,27 @@ def connect():
                 )
                 
                 cursor_obj = conn.cursor()
-
-                orgindicatorsHIV = ExecuteQuery(cursor_obj, path)
-                funcs = [
-                    orgindicatorsHIV.execute_query(hiv_active,site,'J'),
-                    orgindicatorsHIV.execute_query(hiv_mortality,site,'I'),
-                    orgindicatorsHIV.execute_query(mmd_6months,site,'H'),
-                    orgindicatorsHIV.execute_query(mmd_3_5months,site,'G'),
-                    orgindicatorsHIV.execute_query(active_24months_before,site,'F'),
-                    orgindicatorsHIV.execute_query(active_12months_before,site,'D'),
-                    orgindicatorsHIV.execute_count_query(vl_suppression_num,site, 'K'),
-                    orgindicatorsHIV.execute_count_query(vl_suppression_den,site, 'L')
+                report_type = input("Is this an HIV report or  NCD report(Answers are: HIV/NCD):")
+                if report_type == "HIV":
+                    orgindicatorsHIV = ExecuteQuery(cursor_obj, path)
+                    funcs = [
+                        orgindicatorsHIV.execute_query(hiv_active,site,'J'),
+                        orgindicatorsHIV.execute_query(hiv_mortality,site,'I'),
+                        orgindicatorsHIV.execute_query(mmd_6months,site,'H'),
+                        orgindicatorsHIV.execute_query(mmd_3_5months,site,'G'),
+                        orgindicatorsHIV.execute_query(active_24months_before,site,'F'),
+                        orgindicatorsHIV.execute_query(active_12months_before,site,'D'),
+                        orgindicatorsHIV.execute_count_query(vl_suppression_num,site, 'K'),
+                        orgindicatorsHIV.execute_count_query(vl_suppression_den,site, 'L')
+                        ]
+                else:
+                    orgindicatorsNCD = ExecuteQuery(cursor_obj, path)
+                    funcs = [
+                        orgindicatorsNCD.execute_count_query(ncd_active,site,'H'),
+                        orgindicatorsNCD.execute_count_query(ncd_died,site,'G'),
+                        orgindicatorsNCD.execute_count_query(ncd_active_12months_before,site,'D'),
+                        orgindicatorsNCD.execute_count_query(ncd_active_24months_before,site,'F'),
+                        orgindicatorsNCD.execute_count_query(ncd_visits,site,'I')
                     ]
                 for i in tqdm(range(len(funcs))):
                     funcs[i]

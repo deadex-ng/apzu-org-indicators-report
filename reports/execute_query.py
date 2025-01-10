@@ -50,6 +50,7 @@ class ExecuteQuery:
             for qry in qry_lst:
                 self.cursor_obj.execute(qry)
             response = self.cursor_obj.fetchall()
+            print(response)
             x1 = sheet["B" + str(counter)]
             if '"'+ x1.value + '"' == facility:
                 sheet[letter + str(counter)] = response[0][0]
