@@ -1,4 +1,4 @@
-from constants import LOWER_NENO, UPPER_NENO, HIV_HEADERS, NCD_HEADERS
+from constants import LOWER_NENO, UPPER_NENO, HIV_HEADERS, NCD_HEADERS, MH_HEADERS
 import openpyxl
 import argparse
 
@@ -52,6 +52,8 @@ else:
         write_headers(sheet, HIV_HEADERS, report_path)
     elif args.t == "NCD":
         write_headers(sheet, NCD_HEADERS, report_path)
+    elif args.t == "MH":
+        write_headers(sheet, MH_HEADERS, report_path)
     else:
         print("Please specifiy the type of report")
 

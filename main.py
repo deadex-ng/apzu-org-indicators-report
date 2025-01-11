@@ -9,8 +9,8 @@ from dotenv import load_dotenv
 import argparse
 from reports.execute_query import ExecuteQuery
 from  utils.hiv_queries import hiv_active, hiv_mortality, mmd_6months, mmd_3_5months, active_24months_before, active_12months_before, vl_suppression_num, vl_suppression_den
-from utils.ncd_queries import ncd_active, ncd_died, ncd_active_12months_before, ncd_active_24months_before, ncd_visits 
-
+from utils.ncd_queries import ncd_active, ncd_died, ncd_active_12months_before, ncd_active_24months_before, ncd_visits, retention_in_care_for_ncd_at_12months, retention_in_care_for_ncd_at_24months 
+from utils.mh_queries import mh_active, mh_visits, mh_mortality, mh_active_12months_before, mh_active_24months_before, retention_in_care_for_mh_at_12months, retention_in_care_for_mh_at_24months
 load_dotenv()
 
 def connect():
@@ -31,7 +31,7 @@ def connect():
                 )
                 
                 cursor_obj = conn.cursor()
-                report_type = input("Is this an HIV report or  NCD report(Answers are: HIV/NCD):")
+                report_type = input("Is this an HIV report or  NCD report(Answers are: HIV/NCD/MH):")
                 if report_type == "HIV":
                     orgindicatorsHIV = ExecuteQuery(cursor_obj, path)
                     funcs = [
@@ -44,15 +44,30 @@ def connect():
                         orgindicatorsHIV.execute_count_query(vl_suppression_num,site, 'K'),
                         orgindicatorsHIV.execute_count_query(vl_suppression_den,site, 'L')
                         ]
-                else:
+                elif report_type == "NCD":
                     orgindicatorsNCD = ExecuteQuery(cursor_obj, path)
                     funcs = [
                         orgindicatorsNCD.execute_count_query(ncd_active,site,'H'),
                         orgindicatorsNCD.execute_count_query(ncd_died,site,'G'),
                         orgindicatorsNCD.execute_count_query(ncd_active_12months_before,site,'D'),
                         orgindicatorsNCD.execute_count_query(ncd_active_24months_before,site,'F'),
-                        orgindicatorsNCD.execute_count_query(ncd_visits,site,'I')
+                        orgindicatorsNCD.execute_count_query(ncd_visits,site,'I'),
+                        orgindicatorsNCD.execute_count_query(retention_in_care_for_ncd_at_12months,site,'C'),
+                        orgindicatorsNCD.execute_count_query(retention_in_care_for_ncd_at_24months,site,'E')                                                
                     ]
+                elif report_type == "MH":
+                    orgindicatorsMH = ExecuteQuery(cursor_obj, path)
+                    funcs = [
+                        orgindicatorsMH.execute_count_query(mh_active,site,'H'),
+                        orgindicatorsMH.execute_count_query(mh_visits,site,'I'),
+                        orgindicatorsMH.execute_count_query(mh_mortality,site,'G'),
+                        orgindicatorsMH.execute_count_query(mh_active_12months_before,site,'D'),
+                        orgindicatorsMH.execute_count_query(mh_active_24months_before,site,'F'),
+                        orgindicatorsMH.execute_count_query(retention_in_care_for_mh_at_12months,site,'C'),
+                        orgindicatorsMH.execute_count_query(retention_in_care_for_mh_at_24months,site,'E')                                                
+                    ]
+                else:
+                    sys.exit()
                 for i in tqdm(range(len(funcs))):
                     funcs[i]
                 cursor_obj.close()

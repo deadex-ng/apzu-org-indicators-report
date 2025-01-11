@@ -32,7 +32,7 @@ HIV_HEADERS = [
 ]
 
 NCD_HEADERS = [
-    "NCD patrints currently in care enrolled 12 months prior",
+    "NCD patients currently in care enrolled 12 months prior",
     "All NCD patients active in care 12 months before",
     "NCD patients currently in care enrolled 24 months prior",
     "All NCD patients active in care 24 months before",
@@ -41,4 +41,12 @@ NCD_HEADERS = [
     "NCD patients with follow up in quarter"
 ]
 
-
+MH_HEADERS = [
+    "MH patients currently in care enrolled 12 months prior",
+    "All MH patients active in care 12 months before",
+    "MH patients currently in care enrolled 24 months prior",
+    "All MH patients active in care 24 months before",
+    "MH patients died in quarter",
+    "All patients active in care MH",
+    "MH patients with follow up in quarter"
+]
