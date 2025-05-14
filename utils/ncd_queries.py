@@ -3,7 +3,7 @@ ncd_active = '''
 ---
 USE openmrs_warehouse;
 ---
-SET @endDate = "2024-12-31";
+SET @endDate = "2025-03-31";
 ---
 SET @defaultCutOff = 60;
 ---
@@ -43,7 +43,7 @@ FROM (SELECT
                     (SELECT @u:= 0) AS u
                     where program IN ("Chronic Care Program")
 					and start_date <= @endDate
-					and location =  @location
+                                        and location =  @location
             ORDER BY patient_id DESC, start_date DESC, program_state_id DESC
             ) index_descending
             join omrs_patient_identifier opi on index_descending.patient_id = opi.patient_id
@@ -55,7 +55,7 @@ FROM (SELECT
             where opi.type = "Chronic Care Number"
             and state IN ("On Treatment","In advanced Care")
             ) x
-			where patient_id IN (SELECT patient_id FROM omrs_obs where encounter_type IN ("ASTHMA_FOLLOWUP","EPILEPSY_FOLLOWUP","CHRONIC_CARE_FOLLOWUP",
+			where patient_id IN (SELECT patient_id FROM omrs_obs where encounter_type IN ("ASTHMA_FOLLOWUP","CHRONIC_CARE_FOLLOWUP",
 "DIABETES HYPERTENSION FOLLOWUP","CKD_FOLLOWUP","CHF_FOLLOWUP","NCD_OTHER_FOLLOWUP") and concept = "Appointment date" and floor(datediff(@endDate,value_date)) <=  @defaultCutOff);
 '''
 
@@ -66,9 +66,9 @@ ncd_died = '''
 ---
 use openmrs_warehouse;
 ---
-SET @startDate = "2024-10-01";
+SET @startDate = "2025-01-01";
 ---
-SET @endDate = "2024-12-31";
+SET @endDate = "2025-03-31";
 ---
 SET @location = {};
 ---
@@ -106,7 +106,6 @@ FROM (SELECT
                     (SELECT @u:= 0) AS u
                     where program IN ("Chronic Care Program")
 					and start_date <= @endDate
-                 
             ORDER BY patient_id DESC, start_date DESC, program_state_id DESC
             ) index_descending
             join omrs_patient_identifier opi on index_descending.patient_id = opi.patient_id
@@ -126,11 +125,11 @@ ncd_active_12months_before='''
 ---
 USE openmrs_warehouse;
 ---
-SET @endDate = "2023-12-31";
----
-SET @defaultCutOff = 60;
+SET @endDate = "2024-03-31";
 ---
 SET @location = {};
+---
+SET @defaultCutOff = 60;
 ---
 select count(*)
 from
@@ -166,7 +165,7 @@ FROM (SELECT
                     (SELECT @u:= 0) AS u
                     where program IN ("Chronic Care Program")
 					and start_date <= @endDate
-					and location =  @location
+                                        and location =  @location
             ORDER BY patient_id DESC, start_date DESC, program_state_id DESC
             ) index_descending
             join omrs_patient_identifier opi on index_descending.patient_id = opi.patient_id
@@ -178,7 +177,7 @@ FROM (SELECT
             where opi.type = "Chronic Care Number"
             and state IN ("On Treatment","In advanced Care")
             ) x
-			where patient_id IN (SELECT patient_id FROM omrs_obs where encounter_type IN ("ASTHMA_FOLLOWUP","EPILEPSY_FOLLOWUP","CHRONIC_CARE_FOLLOWUP",
+			where patient_id IN (SELECT patient_id FROM omrs_obs where encounter_type IN ("ASTHMA_FOLLOWUP","CHRONIC_CARE_FOLLOWUP",
 "DIABETES HYPERTENSION FOLLOWUP","CKD_FOLLOWUP","CHF_FOLLOWUP","NCD_OTHER_FOLLOWUP") and concept = "Appointment date" and floor(datediff(@endDate,value_date)) <=  @defaultCutOff);
 '''
 
@@ -187,11 +186,11 @@ ncd_active_24months_before='''
 ---
 USE openmrs_warehouse;
 ---
-SET @endDate = "2022-12-31";
----
-SET @defaultCutOff = 60;
+SET @endDate = "2023-03-31";
 ---
 SET @location = {};
+---
+SET @defaultCutOff = 60;
 ---
 select count(*)
 from
@@ -227,7 +226,7 @@ FROM (SELECT
                     (SELECT @u:= 0) AS u
                     where program IN ("Chronic Care Program")
 					and start_date <= @endDate
-					and location =  @location
+                                        and location =  @location
             ORDER BY patient_id DESC, start_date DESC, program_state_id DESC
             ) index_descending
             join omrs_patient_identifier opi on index_descending.patient_id = opi.patient_id
@@ -239,29 +238,31 @@ FROM (SELECT
             where opi.type = "Chronic Care Number"
             and state IN ("On Treatment","In advanced Care")
             ) x
-			where patient_id IN (SELECT patient_id FROM omrs_obs where encounter_type IN ("ASTHMA_FOLLOWUP","EPILEPSY_FOLLOWUP","CHRONIC_CARE_FOLLOWUP",
+			where patient_id IN (SELECT patient_id FROM omrs_obs where encounter_type IN ("ASTHMA_FOLLOWUP","CHRONIC_CARE_FOLLOWUP",
 "DIABETES HYPERTENSION FOLLOWUP","CKD_FOLLOWUP","CHF_FOLLOWUP","NCD_OTHER_FOLLOWUP") and concept = "Appointment date" and floor(datediff(@endDate,value_date)) <=  @defaultCutOff);
 '''
 
 ncd_visits = '''
-/* 1. Proporation of NCD patients with follow up in last three months. */
----
-/* Numerator - Number of NCD patients with a visit in the last three months */
----
 use openmrs_warehouse;
 ---
-SET @startDate = "2024-10-01";
+set @startDate='2025-01-01';
 ---
-SET @endDate = "2024-12-31";
+set @endDate="2025-03-31";
 ---
 SET @location = {};
 ---
-SELECT count(distinct(patient_id))
-FROM mw_ncd_visits
-WHERE visit_date >= @startDate 
-  AND visit_date <= @endDate
-  AND location = @location
-  AND NOT (mental_health_initial = 1 OR mental_health_followup = 1)
+SELECT 
+    SUM(CASE
+        WHEN diabetes_htn_followup = 1 THEN 1
+        WHEN asthma_followup = 1 THEN 1
+        WHEN ckd_followup = 1 THEN 1
+        WHEN chf_followup = 1 THEN 1
+        WHEN ncd_other_followup THEN 1
+    END) AS ncd_visits
+FROM
+    mw_ncd_visits
+WHERE
+    visit_date BETWEEN @startDate AND @endDate  AND location = @location;
 '''
 
 retention_in_care_for_ncd_at_12months='''
@@ -271,13 +272,13 @@ retention_in_care_for_ncd_at_12months='''
 ---
 use openmrs_warehouse;
 ---
-SET @endDate = "2023-12-01";
+SET @endDate = "2024-03-01";
 ---
-SET @endReportindDate = "2024-12-31";
----
-SET @defaultCutOff = 60;
+SET @endReportindDate = "2025-03-31";
 ---
 SET @location = {};
+---
+SET @defaultCutOff = 60;
 ---
 	SELECT
     count(opi.patient_id)
@@ -305,7 +306,7 @@ FROM (SELECT
             where index_desc = 1
             and state IN ("On treatment","In advanced care")
             and opi.patient_id in (
-            SELECT patient_id FROM omrs_obs where encounter_type IN ("ASTHMA_FOLLOWUP","EPILEPSY_FOLLOWUP","CHRONIC_CARE_FOLLOWUP",
+            SELECT patient_id FROM omrs_obs where encounter_type IN ("ASTHMA_FOLLOWUP","CHRONIC_CARE_FOLLOWUP",
 "DIABETES HYPERTENSION FOLLOWUP","CKD_FOLLOWUP","CHF_FOLLOWUP","NCD_OTHER_FOLLOWUP") and concept = "Appointment date" and floor(datediff(@endDate,value_date)) <=  @defaultCutOff)
             and opi.patient_id in 
             (
@@ -344,9 +345,9 @@ retention_in_care_for_ncd_at_24months='''
 ---
 use openmrs_warehouse;
 ---
-SET @endDate = "2022-12-01";
+SET @endDate = "2023-03-01";
 ---
-SET @endReportindDate = "2024-12-31";
+SET @endReportindDate = "2025-03-31";
 ---
 SET @defaultCutOff = 60;
 ---
@@ -378,7 +379,7 @@ FROM (SELECT
             where index_desc = 1
             and state IN ("On treatment","In advanced care")
             and opi.patient_id in (
-            SELECT patient_id FROM omrs_obs where encounter_type IN ("ASTHMA_FOLLOWUP","EPILEPSY_FOLLOWUP","CHRONIC_CARE_FOLLOWUP",
+            SELECT patient_id FROM omrs_obs where encounter_type IN ("ASTHMA_FOLLOWUP","CHRONIC_CARE_FOLLOWUP",
 "DIABETES HYPERTENSION FOLLOWUP","CKD_FOLLOWUP","CHF_FOLLOWUP","NCD_OTHER_FOLLOWUP") and concept = "Appointment date" and floor(datediff(@endDate,value_date)) <=  @defaultCutOff)
             and opi.patient_id in 
             (
@@ -407,5 +408,5 @@ FROM (SELECT
             and opi.type = "Chronic Care Number"
             where index_desc = 1 and opi.location=@location
             and state IN ("Patient died","treatment stopped","patient defaulted")        
-            )
+            );
 '''
